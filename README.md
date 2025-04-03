@@ -84,6 +84,7 @@ Choose one or more if you have extra time:
 - Simple responsive design
 - Add a search input for document titles
 - Enhanced styling and UI improvements for the pages
+- Dockerize the project (create a Dockerfile and docker-compose.yml)
 
 ## Getting Started
 
