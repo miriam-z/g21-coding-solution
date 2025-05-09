@@ -86,27 +86,6 @@ Choose one or more if you have extra time:
 - Enhanced styling and UI improvements for the pages
 - Dockerize the project (create a Dockerfile and docker-compose.yml)
 
-## Getting Started
-
-1. Clone this repository
-2. Install dependencies:
-   ```bash
-   npm install
-   # or
-   yarn install
-   # or
-   pnpm install
-   ```
-3. Start the development server:
-   ```bash
-   npm run dev
-   # or
-   yarn dev
-   # or
-   pnpm dev
-   ```
-4. Open [http://localhost:3000](http://localhost:3000) in your browser
-
 ## Project Structure
 
 The starter repository contains:
@@ -131,19 +110,91 @@ Functionality is the priority for this challenge. Simple styling using the provi
 
 - Complete the challenge within 2 hours
 - Create a new repository with your solution
-- Provide a README with:
-  - Setup instructions
-  - Brief explanation of your approach
-  - Any challenges you faced
-  - What you would improve with more time
+- Provide a README with the following sections:
 
-## Evaluation Criteria
+---
 
-- Basic functionality of the form and table
-- Implementation of a simple API route
-- Code organization
-- TypeScript usage
-- UI design with shadcn components
-- Component structure and organization
+## Setup Instructions
 
-Good luck! We're excited to see what you build.
+1. **Clone the repository:**
+   ```bash
+   git clone git@github.com:miriam-z/g21-coding-solution.git
+   cd g21-coding-solution
+   ```
+2. **Install dependencies:**
+   ```bash
+   npm install
+   # or
+   yarn install
+   # or
+   pnpm install
+   ```
+3. **Run locally:**
+   ```bash
+   npm run dev
+   # or
+   yarn dev
+   # or
+   pnpm dev
+   ```
+   Visit [http://localhost:3000](http://localhost:3000)
+
+4. **Run with Docker (clean workflow):**
+   ```bash
+   docker-compose down -v
+   docker-compose build --no-cache
+   docker-compose up
+   ```
+   Visit [http://localhost:3000](http://localhost:3000)
+
+**Other useful Docker commands:**
+
+- **Stop containers:**
+  ```bash
+  docker-compose down
+  ```
+- **View logs:**
+  ```bash
+  docker-compose logs -f
+  ```
+- **Access the running container shell:**
+  ```bash
+  docker-compose exec app sh
+  ```
+
+**Troubleshooting:**
+- If you see errors related to node_modules or dependencies, try stopping and removing volumes, then rebuild with `docker-compose down -v && docker-compose up --build`.
+- Make sure port 3000 is not in use by another process on your machine.
+
+---
+
+## Brief Explanation of My Approach
+
+- The project uses **Next.js (App Router)**, **React**, **TypeScript**, and **Tailwind CSS** for rapid development and strong typing.
+- All form data and loading states are managed using simple React `useState` hooks for clarity and maintainability.
+- The API route `/api/review-requests` serves and accepts review requests, using a local file for sample data.
+- The UI leverages **shadcn/ui** components for a modern, accessible look with minimal custom styling.
+- The table supports sorting, filtering, and status changes, all handled client-side.
+- The app is fully Dockerized for easy onboarding and consistent local development.
+
+---
+
+## Challenges I Faced
+
+- **Turbopack instability in Docker:** Next.js 15 defaults to Turbopack, which caused runtime errors in Docker. Solved by explicitly disabling Turbopack in `next.config.js` and using Webpack for dev.
+
+---
+
+## What I Would Improve With More Time
+
+- **Data persistence and dynamic updates:** There was no requirement for persistent database storage in this challenge, so the app uses static in-memory data. As a result, status changes and new entries are not truly dynamic. For a production solution, I would implement persistent storage (e.g., SQLite, Postgres), and use state management and caching libraries like Redux or React Query to handle larger and more dynamic datasets efficiently.
+- **API improvements:** I would create more REST endpoints for granular operations (edit, delete, etc.), and add automated tests for these endpoints. For robust type safety, I would use [openapi-typescript](https://www.npmjs.com/package/openapi-typescript) to auto-generate TypeScript types from OpenAPI/Swagger docs.
+- **Backend enhancements:** Consider building the API with Node.js (Express) or FastAPI for scalability and maintainability.
+- **Optimized data loading:** Efficient data loading and fetching strategies, including pagination and caching, to handle large datasets and improve performance.
+- **Responsive design and accessibility:** Further enhance the UI for accessibility and mobile responsiveness.
+- **Automated testing:** Add comprehensive unit and integration tests for both frontend components and backend endpoints.
+- **Stress and load testing:** Implement stress and load tests to ensure the application can handle large datasets and high user concurrency, and to identify performance bottlenecks.
+- **Multi-tenancy and RBAC:** Add multi-tenancy support and robust role-based access control (RBAC) to securely manage data isolation and permissions for different users and organizations.
+
+---
+
