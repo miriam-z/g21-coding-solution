@@ -17,6 +17,7 @@ type SortKey = "clientName" | "documentTitle" | "documentType" | "priority" | "d
 type SortDirection = "asc" | "desc";
 
 export default function ReviewRequestTable({ statusFilter, clientFilter, typeFilter }: ReviewRequestTableProps) {
+  const [search, setSearch] = useState("");
   const [requests, setRequests] = useState<ReviewRequest[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -46,6 +47,9 @@ export default function ReviewRequestTable({ statusFilter, clientFilter, typeFil
   }
   if (typeFilter !== "All") {
     filtered = filtered.filter(r => r.documentType === typeFilter);
+  }
+  if (search.trim() !== "") {
+    filtered = filtered.filter(r => r.documentTitle.toLowerCase().includes(search.trim().toLowerCase()));
   }
 
   // Sorting
@@ -78,7 +82,17 @@ export default function ReviewRequestTable({ statusFilter, clientFilter, typeFil
   });
 
   return (
-    <div className="overflow-x-auto">
+    <div>
+      <div className="mb-4 flex justify-end">
+        <input
+          type="text"
+          value={search}
+          onChange={e => setSearch(e.target.value)}
+          placeholder="Search by document title..."
+          className="border rounded px-3 py-2 w-full max-w-xs shadow-sm focus:outline-none focus:ring focus:border-blue-300"
+        />
+      </div>
+      <div className="overflow-x-auto">
       {loading ? (
         <div className="p-6 flex flex-col items-center justify-center text-gray-500">
           <span className="mb-2"><Spinner size={32} /></span>
@@ -138,6 +152,7 @@ export default function ReviewRequestTable({ statusFilter, clientFilter, typeFil
           </tbody>
         </table>
       )}
+      </div>
     </div>
   );
 }
