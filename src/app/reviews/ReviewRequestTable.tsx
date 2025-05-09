@@ -3,6 +3,8 @@ import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import Spinner from "@/components/ui/spinner";
 import { ReviewRequest } from "@/types";
+import { STATUSES } from "@/data/sample-data";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 
 interface ReviewRequestTableProps {
   statusFilter: string;
@@ -111,7 +113,20 @@ export default function ReviewRequestTable({ statusFilter, clientFilter, typeFil
                   <td className="px-4 py-2">{req.documentType}</td>
                   <td className="px-4 py-2">{req.priority}</td>
                   <td className="px-4 py-2">{req.dueDate}</td>
-                  <td className="px-4 py-2">{req.status}</td>
+                  <td className="px-4 py-2">
+                    <Select value={req.status} onValueChange={newStatus => {
+                      setRequests(prev => prev.map(r => r.id === req.id ? { ...r, status: newStatus as typeof STATUSES[number] } : r));
+                    }}>
+                      <SelectTrigger className="w-32">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {STATUSES.map(status => (
+                          <SelectItem key={status} value={status}>{status}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </td>
                   <td className="px-4 py-2">{new Date(req.createdAt).toLocaleString(undefined, { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' })}</td>
                   <td className="px-4 py-2 flex gap-2 justify-center">
                     <Button size="sm" variant="outline" disabled>View</Button>
