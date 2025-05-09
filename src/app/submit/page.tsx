@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import ReviewRequestForm from "../review-requests/new/ReviewRequestForm";
 
 export default function SubmitPage() {
   return (
@@ -12,14 +13,7 @@ export default function SubmitPage() {
       </div>
 
       <div className="bg-white p-6 rounded-lg shadow-md">
-        {/* TODO: Add ReviewRequestForm component here */}
-        <div className="bg-yellow-100 border-l-4 border-yellow-500 p-4">
-          <p className="text-yellow-700">
-            Replace this placeholder with your ReviewRequestForm component.
-            <br />
-            Submit data to the API endpoint at /api/review-requests
-          </p>
-        </div>
+        <ReviewRequestForm />
       </div>
     </main>
   );

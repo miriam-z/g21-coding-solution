@@ -18,7 +18,7 @@ export const PRIORITIES: Priority[] = ["Low", "Medium", "High"];
 
 export const STATUSES: Status[] = ["Pending", "In Review", "Completed"];
 
-export const SAMPLE_REVIEW_REQUESTS: ReviewRequest[] = [
+let reviewRequests: ReviewRequest[] = [
   {
     id: "1",
     clientName: "Acme Financial",
@@ -75,3 +75,18 @@ export const SAMPLE_REVIEW_REQUESTS: ReviewRequest[] = [
     createdAt: "2025-03-30",
   },
 ];
+
+export function getReviewRequests() {
+  return reviewRequests;
+}
+
+export function addReviewRequest(request: Omit<ReviewRequest, "id" | "status" | "createdAt">) {
+  const newRequest: ReviewRequest = {
+    ...request,
+    id: (reviewRequests.length + 1).toString(),
+    status: "Pending",
+    createdAt: new Date().toISOString(),
+  };
+  reviewRequests = [newRequest, ...reviewRequests];
+  return newRequest;
+}
