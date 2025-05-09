@@ -17,6 +17,7 @@ type SortKey = "clientName" | "documentTitle" | "documentType" | "priority" | "d
 type SortDirection = "asc" | "desc";
 
 export default function ReviewRequestTable({ statusFilter, clientFilter, typeFilter }: ReviewRequestTableProps) {
+  // State
   const [search, setSearch] = useState("");
   const [requests, setRequests] = useState<ReviewRequest[]>([]);
   const [loading, setLoading] = useState(true);
@@ -24,6 +25,7 @@ export default function ReviewRequestTable({ statusFilter, clientFilter, typeFil
   const [sortKey, setSortKey] = useState<SortKey>("createdAt");
   const [sortDirection, setSortDirection] = useState<SortDirection>("desc");
 
+  // Fetch data on mount
   useEffect(() => {
     setLoading(true);
     fetch("/api/review-requests")
@@ -38,48 +40,46 @@ export default function ReviewRequestTable({ statusFilter, clientFilter, typeFil
       });
   }, []);
 
-  let filtered = requests;
-  if (statusFilter !== "All") {
-    filtered = filtered.filter(r => r.status === statusFilter);
-  }
-  if (clientFilter !== "All") {
-    filtered = filtered.filter(r => r.clientName === clientFilter);
-  }
-  if (typeFilter !== "All") {
-    filtered = filtered.filter(r => r.documentType === typeFilter);
-  }
-  if (search.trim() !== "") {
-    filtered = filtered.filter(r => r.documentTitle.toLowerCase().includes(search.trim().toLowerCase()));
+  // Filtering helpers
+  function applyFilters(requests: ReviewRequest[]) {
+    return requests.filter(r => {
+      if (statusFilter !== "All" && r.status !== statusFilter) return false;
+      if (clientFilter !== "All" && r.clientName !== clientFilter) return false;
+      if (typeFilter !== "All" && r.documentType !== typeFilter) return false;
+      if (search.trim() && !r.documentTitle.toLowerCase().includes(search.trim().toLowerCase())) return false;
+      return true;
+    });
   }
 
-  // Sorting
-  const handleSort = (key: SortKey) => {
+  // Sorting helpers
+  function compareRequests(a: ReviewRequest, b: ReviewRequest) {
+    let aValue = a[sortKey];
+    let bValue = b[sortKey];
+    if (sortKey === "dueDate" || sortKey === "createdAt") {
+      const aTime = aValue ? new Date(aValue as string).getTime() : 0;
+      const bTime = bValue ? new Date(bValue as string).getTime() : 0;
+      if (aTime === bTime) return 0;
+      return sortDirection === "asc" ? aTime - bTime : bTime - aTime;
+    } else {
+      const aStr = (aValue ?? "").toString().toLowerCase();
+      const bStr = (bValue ?? "").toString().toLowerCase();
+      if (aStr === bStr) return 0;
+      return sortDirection === "asc" ? (aStr > bStr ? 1 : -1) : (aStr < bStr ? 1 : -1);
+    }
+  }
+
+  const filtered = applyFilters(requests);
+  const sorted = [...filtered].sort(compareRequests);
+
+  // Sorting interaction
+  function handleSort(key: SortKey) {
     if (sortKey === key) {
       setSortDirection(sortDirection === "asc" ? "desc" : "asc");
     } else {
       setSortKey(key);
       setSortDirection("asc");
     }
-  };
-
-  const sorted = [...filtered].sort((a, b) => {
-    let aValue = a[sortKey];
-    let bValue = b[sortKey];
-
-    if (sortKey === "dueDate" || sortKey === "createdAt") {
-      // Handle empty or invalid dates gracefully
-      const aTime = aValue ? new Date(aValue as string).getTime() : 0;
-      const bTime = bValue ? new Date(bValue as string).getTime() : 0;
-      if (aTime === bTime) return 0;
-      return sortDirection === "asc" ? aTime - bTime : bTime - aTime;
-    } else {
-      // Compare as lowercase strings for consistency
-      const aStr = (aValue ?? "").toString().toLowerCase();
-      const bStr = (bValue ?? "").toString().toLowerCase();
-      if (aStr === bStr) return 0;
-      return sortDirection === "asc" ? (aStr > bStr ? 1 : -1) : (aStr < bStr ? 1 : -1);
-    }
-  });
+  }
 
   return (
     <div>
