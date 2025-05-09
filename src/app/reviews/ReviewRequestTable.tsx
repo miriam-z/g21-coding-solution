@@ -88,14 +88,14 @@ export default function ReviewRequestTable({ statusFilter, clientFilter, typeFil
         <table className="min-w-full bg-white border rounded shadow">
           <thead>
             <tr className="bg-gray-50">
-              <th className="px-4 py-2 text-left cursor-pointer select-none" onClick={() => handleSort("clientName")}>Client {sortKey === "clientName" && (sortDirection === "asc" ? "▲" : "▼")}</th>
-              <th className="px-4 py-2 text-left cursor-pointer select-none" onClick={() => handleSort("documentTitle")}>Title {sortKey === "documentTitle" && (sortDirection === "asc" ? "▲" : "▼")}</th>
-              <th className="px-4 py-2 text-left cursor-pointer select-none" onClick={() => handleSort("documentType")}>Type {sortKey === "documentType" && (sortDirection === "asc" ? "▲" : "▼")}</th>
-              <th className="px-4 py-2 text-left cursor-pointer select-none" onClick={() => handleSort("priority")}>Priority {sortKey === "priority" && (sortDirection === "asc" ? "▲" : "▼")}</th>
-              <th className="px-4 py-2 text-left cursor-pointer select-none" onClick={() => handleSort("dueDate")}>Due Date {sortKey === "dueDate" && (sortDirection === "asc" ? "▲" : "▼")}</th>
-              <th className="px-4 py-2 text-left cursor-pointer select-none" onClick={() => handleSort("status")}>Status {sortKey === "status" && (sortDirection === "asc" ? "▲" : "▼")}</th>
-              <th className="px-4 py-2 text-left cursor-pointer select-none" onClick={() => handleSort("createdAt")}>Created {sortKey === "createdAt" && (sortDirection === "asc" ? "▲" : "▼")}</th>
-              <th className="px-4 py-2">Actions</th>
+              <th scope="col" className="px-4 py-2 text-left cursor-pointer select-none" onClick={() => handleSort("clientName")}>Client {sortKey === "clientName" && (sortDirection === "asc" ? "▲" : "▼")}</th>
+              <th scope="col" className="px-4 py-2 text-left cursor-pointer select-none" onClick={() => handleSort("documentTitle")}>Title {sortKey === "documentTitle" && (sortDirection === "asc" ? "▲" : "▼")}</th>
+              <th scope="col" className="px-4 py-2 text-left cursor-pointer select-none" onClick={() => handleSort("documentType")}>Type {sortKey === "documentType" && (sortDirection === "asc" ? "▲" : "▼")}</th>
+              <th scope="col" className="px-4 py-2 text-left cursor-pointer select-none" onClick={() => handleSort("priority")}>Priority {sortKey === "priority" && (sortDirection === "asc" ? "▲" : "▼")}</th>
+              <th scope="col" className="px-4 py-2 text-left cursor-pointer select-none" onClick={() => handleSort("dueDate")}>Due Date {sortKey === "dueDate" && (sortDirection === "asc" ? "▲" : "▼")}</th>
+              <th scope="col" className="px-4 py-2 text-left cursor-pointer select-none" onClick={() => handleSort("status")}>Status {sortKey === "status" && (sortDirection === "asc" ? "▲" : "▼")}</th>
+              <th scope="col" className="px-4 py-2 text-left cursor-pointer select-none" onClick={() => handleSort("createdAt")}>Created {sortKey === "createdAt" && (sortDirection === "asc" ? "▲" : "▼")}</th>
+              <th scope="col" className="px-4 py-2">Actions</th>
             </tr>
           </thead>
           <tbody>
