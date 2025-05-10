@@ -1,51 +1,31 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
-import Spinner from "@/components/ui/spinner";
+import { Badge } from "@/components/ui/badge";
 import { ReviewRequest } from "@/types";
-import { STATUSES } from "@/data/sample-data";
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 
-interface ReviewRequestTableProps {
-  statusFilter: string;
-  clientFilter: string;
-  typeFilter: string;
-}
 
 type SortKey = "clientName" | "documentTitle" | "documentType" | "priority" | "dueDate" | "status" | "createdAt";
 
 type SortDirection = "asc" | "desc";
 
-export default function ReviewRequestTable({ statusFilter, clientFilter, typeFilter }: ReviewRequestTableProps) {
-  // State
+type ReviewRequestTableProps = {
+  requests: ReviewRequest[];
+};
+
+const parseDateValue = (value: string | undefined) => value ? new Date(value).getTime() : 0;
+const parseStringValue = (value: string | undefined) => (value ?? "").toString().toLowerCase();
+
+export default function ReviewRequestTable({ requests }: ReviewRequestTableProps) {
+  // State for filtering, sorting, and search
   const [search, setSearch] = useState("");
-  const [requests, setRequests] = useState<ReviewRequest[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
   const [sortKey, setSortKey] = useState<SortKey>("createdAt");
   const [sortDirection, setSortDirection] = useState<SortDirection>("desc");
 
-  // Fetch data on mount
-  useEffect(() => {
-    setLoading(true);
-    fetch("/api/review-requests")
-      .then(res => res.json())
-      .then(data => {
-        setRequests(data);
-        setLoading(false);
-      })
-      .catch(() => {
-        setError("Failed to load review requests");
-        setLoading(false);
-      });
-  }, []);
-
   // Filtering helpers
   function applyFilters(requests: ReviewRequest[]) {
+    // For now, only filter by search (status/client/type filters can be added as local state if needed)
     return requests.filter(r => {
-      if (statusFilter !== "All" && r.status !== statusFilter) return false;
-      if (clientFilter !== "All" && r.clientName !== clientFilter) return false;
-      if (typeFilter !== "All" && r.documentType !== typeFilter) return false;
       if (search.trim() && !r.documentTitle.toLowerCase().includes(search.trim().toLowerCase())) return false;
       return true;
     });
@@ -56,13 +36,13 @@ export default function ReviewRequestTable({ statusFilter, clientFilter, typeFil
     let aValue = a[sortKey];
     let bValue = b[sortKey];
     if (sortKey === "dueDate" || sortKey === "createdAt") {
-      const aTime = aValue ? new Date(aValue as string).getTime() : 0;
-      const bTime = bValue ? new Date(bValue as string).getTime() : 0;
+      const aTime = parseDateValue(aValue)
+      const bTime = parseDateValue(bValue)
       if (aTime === bTime) return 0;
       return sortDirection === "asc" ? aTime - bTime : bTime - aTime;
     } else {
-      const aStr = (aValue ?? "").toString().toLowerCase();
-      const bStr = (bValue ?? "").toString().toLowerCase();
+      const aStr = parseStringValue(aValue)
+      const bStr = parseStringValue(bValue)
       if (aStr === bStr) return 0;
       return sortDirection === "asc" ? (aStr > bStr ? 1 : -1) : (aStr < bStr ? 1 : -1);
     }
@@ -81,6 +61,8 @@ export default function ReviewRequestTable({ statusFilter, clientFilter, typeFil
     }
   }
 
+  const renderTableHeader = ({ key, title }: { key: SortKey, title: string }) => <th scope="col" className="px-4 py-2 text-left cursor-pointer select-none" onClick={() => handleSort(key)}>{title} {sortKey === key && (sortDirection === "asc" ? "▲" : "▼")}</th>
+
   return (
     <div>
       <div className="mb-4 flex justify-end">
@@ -89,28 +71,20 @@ export default function ReviewRequestTable({ statusFilter, clientFilter, typeFil
           value={search}
           onChange={e => setSearch(e.target.value)}
           placeholder="Search by document title..."
-          className="border rounded px-3 py-2 w-full max-w-xs shadow-sm focus:outline-none focus:ring focus:border-blue-300"
+          className="border rounded px-3 py-2 w-full max-w-xs shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-200"
         />
       </div>
       <div className="overflow-x-auto">
-      {loading ? (
-        <div className="p-6 flex flex-col items-center justify-center text-gray-500">
-          <span className="mb-2"><Spinner size={32} /></span>
-          <span>Loading...</span>
-        </div>
-      ) : error ? (
-        <div className="p-6 text-center text-red-600">{error}</div>
-      ) : (
         <table className="min-w-full bg-white border rounded shadow">
           <thead>
             <tr className="bg-gray-50">
-              <th scope="col" className="px-4 py-2 text-left cursor-pointer select-none" onClick={() => handleSort("clientName")}>Client {sortKey === "clientName" && (sortDirection === "asc" ? "▲" : "▼")}</th>
-              <th scope="col" className="px-4 py-2 text-left cursor-pointer select-none" onClick={() => handleSort("documentTitle")}>Title {sortKey === "documentTitle" && (sortDirection === "asc" ? "▲" : "▼")}</th>
-              <th scope="col" className="px-4 py-2 text-left cursor-pointer select-none" onClick={() => handleSort("documentType")}>Type {sortKey === "documentType" && (sortDirection === "asc" ? "▲" : "▼")}</th>
-              <th scope="col" className="px-4 py-2 text-left cursor-pointer select-none" onClick={() => handleSort("priority")}>Priority {sortKey === "priority" && (sortDirection === "asc" ? "▲" : "▼")}</th>
-              <th scope="col" className="px-4 py-2 text-left cursor-pointer select-none" onClick={() => handleSort("dueDate")}>Due Date {sortKey === "dueDate" && (sortDirection === "asc" ? "▲" : "▼")}</th>
-              <th scope="col" className="px-4 py-2 text-left cursor-pointer select-none" onClick={() => handleSort("status")}>Status {sortKey === "status" && (sortDirection === "asc" ? "▲" : "▼")}</th>
-              <th scope="col" className="px-4 py-2 text-left cursor-pointer select-none" onClick={() => handleSort("createdAt")}>Created {sortKey === "createdAt" && (sortDirection === "asc" ? "▲" : "▼")}</th>
+              {renderTableHeader({ key: "clientName", title: "Client" })}
+              {renderTableHeader({ key: "documentTitle", title: "Title" })}
+              {renderTableHeader({ key: "documentType", title: "Type" })}
+              {renderTableHeader({ key: "priority", title: "Priority" })}
+              {renderTableHeader({ key: "dueDate", title: "Due Date" })}
+              {renderTableHeader({ key: "status", title: "Status" })}
+              {renderTableHeader({ key: "createdAt", title: "Created" })}
               <th scope="col" className="px-4 py-2">Actions</th>
             </tr>
           </thead>
@@ -125,23 +99,22 @@ export default function ReviewRequestTable({ statusFilter, clientFilter, typeFil
                   <td className="px-4 py-2">{req.clientName}</td>
                   <td className="px-4 py-2">{req.documentTitle}</td>
                   <td className="px-4 py-2">{req.documentType}</td>
-                  <td className="px-4 py-2">{req.priority}</td>
+                  <td className="px-4 py-2">
+                    {req.priority === "High" && (
+                      <Badge className="bg-red-200 text-red-900 border-none shadow-sm">High</Badge>
+                    )}
+                    {req.priority === "Medium" && (
+                      <Badge className="bg-amber-200 text-amber-900 border-none shadow-sm">Medium</Badge>
+                    )}
+                    {req.priority === "Low" && (
+                      <Badge className="bg-lime-200 text-lime-900 border-none shadow-sm">Low</Badge>
+                    )}
+                  </td>
                   <td className="px-4 py-2">{req.dueDate}</td>
                   <td className="px-4 py-2">
-                    <Select value={req.status} onValueChange={newStatus => {
-                      setRequests(prev => prev.map(r => r.id === req.id ? { ...r, status: newStatus as typeof STATUSES[number] } : r));
-                    }}>
-                      <SelectTrigger className="w-32">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {STATUSES.map(status => (
-                          <SelectItem key={status} value={status}>{status}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <Button variant="outline" size="sm" disabled className="w-32 cursor-not-allowed select-none">{req.status}</Button>
                   </td>
-                  <td className="px-4 py-2">{new Date(req.createdAt).toLocaleString(undefined, { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' })}</td>
+                  <td className="px-4 py-2">{new Date(req.createdAt).toISOString().replace('T', ' ').slice(0, 16)}</td>
                   <td className="px-4 py-2 flex gap-2 justify-center">
                     <Button size="sm" variant="outline" disabled>View</Button>
                     <Button size="sm" variant="secondary" disabled>Edit</Button>
@@ -151,7 +124,6 @@ export default function ReviewRequestTable({ statusFilter, clientFilter, typeFil
             )}
           </tbody>
         </table>
-      )}
       </div>
     </div>
   );

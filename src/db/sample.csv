@@ -1,0 +1,6 @@
+uuid, clientName,documentTitle,documentType,priority,dueDate,status,createdAt
+1,Acme Financial,Q1 Investment Newsletter,Financial Promotion,High,2025-04-15,Pending,2025-03-28
+2,Birch Investments,Annual Risk Assessment,Risk Assessment,Medium,2025-04-30,In Review,2025-03-25
+3,Coral Capital Management,ESG Investment Strategy,DDQ Response,Low,2025-05-10,Completed,2025-03-15
+4,Diamond Trust,Retirement Product Brochure,Financial Promotion,Medium,2025-04-20,In Review,2025-03-22
+5,Eagle Asset Advisors,Cybersecurity Assessment,Risk Assessment,High,2025-04-05,Pending,2025-03-30

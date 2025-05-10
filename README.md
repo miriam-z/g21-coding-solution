@@ -136,6 +136,8 @@ Functionality is the priority for this challenge. Simple styling using the provi
    yarn dev
    # or
    pnpm dev
+   # or
+   npx next dev
    ```
    Visit [http://localhost:3000](http://localhost:3000)
 
@@ -168,33 +170,31 @@ Functionality is the priority for this challenge. Simple styling using the provi
 
 ---
 
-## Brief Explanation of My Approach
+## Architecture Overview
 
-- The project uses **Next.js (App Router)**, **React**, **TypeScript**, and **Tailwind CSS** for rapid development and strong typing.
-- All form data and loading states are managed using simple React `useState` hooks for clarity and maintainability.
-- The API route `/api/review-requests` serves and accepts review requests, using a local file for sample data.
-- The UI leverages **shadcn/ui** components for a modern, accessible look with minimal custom styling.
-- The table supports sorting, filtering, and status changes, all handled client-side.
-- The app is fully Dockerized for easy onboarding and consistent local development.
-
----
-
-## Challenges I Faced
-
-- **Turbopack instability in Docker:** Next.js 15 defaults to Turbopack, which caused runtime errors in Docker. Solved by explicitly disabling Turbopack in `next.config.js` and using Webpack for dev.
+- **Data Layer (Supabase):** Migrated from static mock data to a real PostgreSQL backend using Supabase. All review request data is persisted via secure, async Supabase client functions, ready for multi-user RLS and production use.
+- **Client-Side Fetching:** All reads/writes are performed using client-side hooks and fetch logic for fast interactivity. SSR was intentionally avoided to keep auth handling simpler and support dynamic client-specific filtering.
+- **Component Design:** UI is composed of reusable shadcn/ui components (DropdownFilter, ReviewRequestTable, etc.) following DRY principles and clear folder separation.
+- **Routing (App Router):** Structured with Next.js App Router (`/submit`, `/reviews`)
+- **UI/UX:** Designed for minimal, accessible interactivity using Tailwind and shadcn/ui. Sorting, filtering, and table logic is modular and easily extendable.
+- **Dockerized:** Fully Dockerized for consistent local onboarding and dev environments.
 
 ---
 
-## What I Would Improve With More Time
+## Future Enhancements
 
-- **Data persistence and dynamic updates:** There was no requirement for persistent database storage in this challenge, so the app uses static in-memory data. As a result, status changes and new entries are not truly dynamic. For a production solution, I would implement persistent storage (e.g., SQLite, Postgres), and use state management and caching libraries like Redux or React Query to handle larger and more dynamic datasets efficiently.
-- **API improvements:** I would create more REST endpoints for granular operations (edit, delete, etc.), and add automated tests for these endpoints. For robust type safety, I would use [openapi-typescript](https://www.npmjs.com/package/openapi-typescript) to auto-generate TypeScript types from OpenAPI/Swagger docs.
-- **Backend enhancements:** Consider building the API with Node.js (Express) or FastAPI for scalability and maintainability.
-- **Optimized data loading:** Efficient data loading and fetching strategies, including pagination and caching, to handle large datasets and improve performance.
-- **Responsive design and accessibility:** Further enhance the UI for accessibility and mobile responsiveness.
-- **Automated testing:** Add comprehensive unit and integration tests for both frontend components and backend endpoints.
-- **Stress and load testing:** Implement stress and load tests to ensure the application can handle large datasets and high user concurrency, and to identify performance bottlenecks.
-- **Multi-tenancy and RBAC:** Add multi-tenancy support and robust role-based access control (RBAC) to securely manage data isolation and permissions for different users and organizations.
+- **Dynamic actions (View/Edit):** Add View and Edit flows for full submission lifecycle and dynamic status updates.
+- **Access control & multi-tenancy:** Apply Supabase RLS and RBAC to isolate tenant data and manage user permissions.
+- **Admin tooling:** Support bulk actions, CSV import/export, and an admin dashboard for operations.
+* **State management & data loading:** Use [React Query](https://tanstack.com/query/latest/docs/framework/react/overview) or [SWR](https://swr.vercel.app/) for caching and real-time updates. Add Redux for complex client-side state. For large datasets, implement SSR/SSG with pagination to improve load performance.
+- **API improvements:** Add REST endpoints for editing, deleting, and retrieving review requests, with test coverage. Generate TypeScript types from OpenAPI specs using [openapi-typescript](https://www.npmjs.com/package/openapi-typescript)
+- **Backend enhancements:** Build out the API using Node.js or FastAPI for scalability and clearer separation of concerns.
+- **Reusable logic:** Abstract fetch/filter logic into custom hooks and clean up component structure for better maintainability.
+- **Accessibility & responsiveness:** Improve mobile UI and ensure full WCAG compliance.
+- **Automated testing:** Add end-to-end unit and integration tests to ensure reliability across frontend and backend logic.
+- **Performance testing:** Run stress and load tests to ensure scalability and identify bottlenecks.
+- **File uploads:** Implement secure uploads using Supabase or S3, persist document metadata, and enable/preview/download.
+- **ML workflows:** Integrate NLP pipelines to classify, summarize, or analyze uploaded documents for compliance flagging.
 
 ---
 

@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getReviewRequests, addReviewRequest } from "@/data/sample-data";
+import { getReviewRequests, addReviewRequest } from "@/db";
 
 export async function GET() {
-  return NextResponse.json(getReviewRequests());
+  return NextResponse.json(await getReviewRequests());
 }
 
 export async function POST(req: NextRequest) {

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import ReviewRequestForm from "../review-requests/new/ReviewRequestForm";
+import ReviewRequestForm from "./ReviewRequestForm";
 
 export default function SubmitPage() {
   return (

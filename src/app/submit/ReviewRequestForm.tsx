@@ -1,13 +1,13 @@
 "use client";
 import React, { useState } from "react";
-import { SAMPLE_CLIENTS, DOCUMENT_TYPES, PRIORITIES } from "@/data/sample-data";
-import { ReviewRequest } from "@/types";
+import { DOCUMENT_TYPES, PRIORITIES } from "@/app/domain";
+
+import { SAMPLE_CLIENTS } from "@/app/mockData";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import Dropdown from "@/components/Dropdown";
 import { z } from "zod";
-
 
 const initialForm = {
   clientName: SAMPLE_CLIENTS[0],
@@ -30,6 +30,13 @@ const schema = z.object({
   ),
   notes: z.string().optional(),
 });
+
+const FormSection = ({ title, children }: { title: string; children: React.ReactNode }) => (
+  <div>
+    <label className="block font-medium mb-1">{title}</label>
+    {children}
+  </div>
+)
 
 export default function ReviewRequestForm() {
   const [form, setForm] = useState(initialForm);
@@ -69,7 +76,7 @@ export default function ReviewRequestForm() {
         setLoading(false);
         return;
       }
-      // File upload is simulated, not sent
+      // File upload is simulated, not sent to the API in this demo
       const res = await fetch("/api/review-requests", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -85,7 +92,6 @@ export default function ReviewRequestForm() {
     }
   };
 
-
   return (
     <form className="space-y-6 bg-white p-6 rounded shadow" onSubmit={handleSubmit}>
       {/* Validation errors */}
@@ -96,63 +102,42 @@ export default function ReviewRequestForm() {
           ))}
         </div>
       )}
-
-      <div>
-        <label className="block font-medium mb-1">Client Name</label>
-        <Select value={form.clientName} onValueChange={v => handleSelect("clientName", v)}>
-          <SelectTrigger className="w-full">
-            <SelectValue placeholder="Select client" />
-          </SelectTrigger>
-          <SelectContent>
-            {SAMPLE_CLIENTS.map(client => (
-              <SelectItem key={client} value={client}>{client}</SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-      <div>
-        <label className="block font-medium mb-1">Document Title</label>
+      <FormSection title="Client Name">
+        <Dropdown
+          value={form.clientName}
+          onChange={(value) => handleSelect("clientName", value)}
+          options={SAMPLE_CLIENTS}
+        />
+      </FormSection>
+      <FormSection title="Document Title">
         <Input name="documentTitle" value={form.documentTitle} onChange={handleChange} required />
-      </div>
-      <div>
-        <label className="block font-medium mb-1">Document Type</label>
-        <Select value={form.documentType} onValueChange={v => handleSelect("documentType", v)}>
-          <SelectTrigger className="w-full">
-            <SelectValue placeholder="Select type" />
-          </SelectTrigger>
-          <SelectContent>
-            {DOCUMENT_TYPES.map(type => (
-              <SelectItem key={type} value={type}>{type}</SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-      <div>
-        <label className="block font-medium mb-1">Priority</label>
-        <Select value={form.priority} onValueChange={v => handleSelect("priority", v)}>
-          <SelectTrigger className="w-full">
-            <SelectValue placeholder="Select priority" />
-          </SelectTrigger>
-          <SelectContent>
-            {PRIORITIES.map(priority => (
-              <SelectItem key={priority} value={priority}>{priority}</SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-      <div>
-        <label className="block font-medium mb-1">Due Date</label>
+      </FormSection>
+      <FormSection title="Document Type">
+        <Dropdown
+          value={form.documentType}
+          onChange={(value) => handleSelect("documentType", value)}
+          options={DOCUMENT_TYPES}
+        />
+      </FormSection>
+      <FormSection title="Priority">
+        <Dropdown
+          value={form.priority}
+          onChange={(value) => handleSelect("priority", value)}
+          options={PRIORITIES}
+        />
+      </FormSection>
+      <FormSection title="Due Date">
         <Input type="date" name="dueDate" value={form.dueDate} onChange={handleChange} required />
-      </div>
-      <div>
-        <label className="block font-medium mb-1">Notes</label>
+      </FormSection>
+      <FormSection title="Notes">
         <Textarea name="notes" value={form.notes} onChange={handleChange} rows={3} />
-      </div>
-      <div>
-        <label className="block font-medium mb-1">File Upload (simulated)</label>
-        <Input type="file" name="file" onChange={handleFile} disabled />
-        <p className="text-xs text-gray-400">File upload is not implemented in this demo.</p>
-      </div>
+      </FormSection>
+      <FormSection title="File Upload (simulated)">
+        <>
+          <Input type="file" name="file" onChange={handleFile} disabled />
+          <p className="text-xs text-gray-400">File upload is not implemented in this demo.</p>
+        </>
+      </FormSection>
       <Button type="submit" className="w-full" disabled={loading}>
         {loading ? "Submitting..." : "Submit Request"}
       </Button>
